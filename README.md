@@ -35,7 +35,12 @@ terminal.
    git clone https://github.com/eliasalbuquerque/python-user-registration-system-sqlite
    ```
 
-2. **Executar o script:**
+2. **Instalar as dependências:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Executar o script:**
    ```bash
    python app.py
    ```
