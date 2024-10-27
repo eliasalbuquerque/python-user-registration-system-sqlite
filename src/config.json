@@ -1,0 +1,4 @@
+{
+    "db_path": "src/userhub.db",
+    "show_startup_message": false
+}
