@@ -1,6 +1,7 @@
 import re
 import os
 import random
+from tabulate import tabulate
 from src.db_manager import DatabaseManager
 
 
@@ -97,8 +98,10 @@ class TerminalGui:
             # Obtém o último usuário do banco
             user = self.db.get_user(last=True)
             if user:
-                data = user[0]  # Pega a primeira linha da lista retornada
-                print(f"ID: {data[0]}, Nome: {data[1]}, Email: {data[2]}, Idade: {data[3]}")
+                # Formata os dados como tabela usando tabulate
+                headers = ["ID", "Nome", "Email", "Idade"]
+                table = [tuple(row) for row in user]
+                print(tabulate(table, headers=headers, tablefmt="plain"))
             else:
                 print("Nenhum usuário cadastrado.")
 
@@ -108,9 +111,10 @@ class TerminalGui:
                 filter_column = command_parts[1]
                 users = self.db.get_user(select=filter_column)
                 if users:
-                    print("Usuários cadastrados:")
-                    for user in users:
-                        print(f"ID: {user[0]}, {user[1]}")
+                    # Formata os dados como tabela usando tabulate
+                    headers = ["ID", filter_column.capitalize()]
+                    table = [(user[0], user[1]) for user in users]
+                    print(tabulate(table, headers=headers, tablefmt="plain"))
                 else:
                     print("Nenhum usuário cadastrado.")
             else:
@@ -129,8 +133,10 @@ class TerminalGui:
             # Buscar e imprimir usuário
             user = self.db.get_user(user_id=id)
             if user:
-                for data in user:
-                    print(f"ID: {data[0]}, Nome: {data[1]}, Email: {data[2]}, Idade: {data[3]}")
+                # Formata os dados como tabela usando tabulate
+                headers = ["ID", "Nome", "Email", "Idade"]
+                table = [tuple(row) for row in user]
+                print(tabulate(table, headers=headers, tablefmt="plain"))
             else:
                 print("Nenhum usuário encontrado com o ID especificado.")
         
@@ -138,15 +144,15 @@ class TerminalGui:
         elif (command_parts is not None and command_parts[0] == "--list") or list_all==True:
             users = self.db.get_user()
             if users:
-                print("Usuários cadastrados:")
-                for user in users:
-                    print(f"ID: {user[0]}, Nome: {user[1]}, Email: {user[2]}, Idade: {user[3]}")
+                # Formata os dados como tabela usando tabulate
+                headers = ["ID", "Nome", "Email", "Idade"]
+                table = [tuple(row) for row in users]
+                print(tabulate(table, headers=headers, tablefmt="plain"))
             else:
                 print("Nenhum usuário cadastrado.")
         
         else:
             print("Comando inválido. Use: --list, --list name, --list email, --list age ou --list id <id>.")
-
 
     def __add_user(self):
         """Adiciona um novo usuário ao banco de dados."""
@@ -189,7 +195,7 @@ class TerminalGui:
                 while True:
                     continuar = input(
                         "Deseja adicionar outro usuário? [Y/n]: ").lower()
-                    if continuar in ("y", "yes", "sim"):
+                    if continuar in ("y", "yes", "s", "sim"):
                         break
                     elif continuar in ("n", "no", "nao", "não"):
                         print("Encerrando adição de usuários.\n")
@@ -264,13 +270,13 @@ class TerminalGui:
                     case _:
                         # Verificar se há ao menos dois elementos: ID e outro comando
                         if len(edit_split_list) < 2:
-                            print("Entrada inválida. Por favor, forneça um ID e um comando.")
+                            print("Entrada inválida. Por favor, forneça um ID e um comando.\n")
                             continue
 
                         # Validar ID
                         id = edit_split_list[0]
                         if not self._validate_id(id):
-                            print("ID inválido. O ID deve ser um número inteiro positivo.")
+                            print("ID inválido. O ID deve ser um número inteiro positivo.\n")
                             continue
                         user_id = int(id)
 
@@ -289,12 +295,12 @@ class TerminalGui:
 
                         # Valida nome
                         if name and not self._validate_name(name):
-                            print("Nome inserido inválido. Tente novamente.")
+                            print("Nome inserido inválido. Tente novamente.\n")
                             continue
 
                         # Valida email
                         if email and not self._validate_email(email):
-                            print("Email inserido inválido. Tente novamente.")
+                            print("Email inserido inválido. Tente novamente.\n")
                             continue
 
                         # Valida idade
@@ -314,7 +320,7 @@ class TerminalGui:
                 self.db.update_user(user_id, name, email, age)
 
                 # Exibe o usuário atualizado
-                print("Usuário atualizado com sucesso!")
+                print("Usuário atualizado com sucesso!\n")
                 self._list_user(list_id=user_id)
                 print('')
                 
@@ -322,13 +328,13 @@ class TerminalGui:
                 while True:
                     continuar = input(
                         "Deseja editar outro usuário? [Y/n]: ").lower()
-                    if continuar in ("y", "yes", "sim"):
+                    if continuar in ("y", "yes", "s", "sim"):
                         break
                     elif continuar in ("n", "no", "nao", "não"):
                         print("Encerrando edição de usuários.\n")
                         return
                     else:
-                        print("Resposta inválida. Digite Y/n.")
+                        print("Resposta inválida. Digite Y/n.\n")
 
             except KeyboardInterrupt:
                 print("\nOperação cancelada pelo usuário. Retornando ao menu principal.\n")
@@ -410,7 +416,7 @@ class TerminalGui:
                 while True:
                     continuar = input(
                         "Deseja remover outro usuário? [Y/n]: ").lower()
-                    if continuar in ("y", "yes", "sim"):
+                    if continuar in ("y", "yes", "s", "sim"):
                         break
                     elif continuar in ("n", "no", "nao", "não"):
                         print("Encerrando remoção de usuários.\n")
