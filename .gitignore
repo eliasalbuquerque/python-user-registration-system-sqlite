@@ -6,6 +6,13 @@
 # Directories and stuff
 destravadev/
 userhub.db
+**config.json
+
+# Monitor resources config
+# monitor.py
+# app_monitor.py
+# MONITOR.md
+# requirements.monitor.txt
 
 # Log files and directories
 log/
